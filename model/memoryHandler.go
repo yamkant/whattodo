@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"sort"
 	"time"
 )
 
@@ -15,6 +16,10 @@ func (m *memoryHandler) getTodos() []*Todo {
 		fmt.Println(v)
 		list = append(list, v)
 	}
+
+	sort.Slice(list, func(i, j int) bool {
+		return list[i].ID > list[j].ID
+	})
 	return list
 }
 
