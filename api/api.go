@@ -1,4 +1,4 @@
-package app
+package api
 
 import (
 	"fmt"
@@ -8,15 +8,15 @@ import (
 	"github.com/urfave/negroni"
 )
 
-type AppHandler struct {
+type APIHandler struct {
 	http.Handler
 }
 
-func (a *AppHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Hello, world!")
+func (a *APIHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "API Handler Index")
 }
 
-func MyHttpHandler() *AppHandler {
+func APIHttpHandler() *APIHandler {
 	r := mux.NewRouter()
 	n := negroni.New(
 		negroni.NewRecovery(),
@@ -24,11 +24,11 @@ func MyHttpHandler() *AppHandler {
 	)
 	n.UseHandler(r)
 
-	a := &AppHandler{
+	a := &APIHandler{
 		Handler: n,
 	}
 
-	r.HandleFunc("/", a.indexHandler)
+	r.HandleFunc("/api/", a.indexHandler)
 
 	return a
 }
