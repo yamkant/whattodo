@@ -144,9 +144,12 @@ const onClickAddBtn = async (target) => {
 
     const inputObj = target.closest('.todo-form').querySelector('input');
 
-    const res = await axios({
+    const resData = await axios({
         method: 'post',
         url: '/api/todos/',
+        headers: {
+            'Content-Type': 'application/json'
+        },
         data: {
             content: inputObj.value,
         }
@@ -158,8 +161,32 @@ const onClickAddBtn = async (target) => {
         console.error(err);
     });
 
-    if (res) {
+    if (resData) {
+        console.log(resData)
         todoUl.insertAdjacentHTML('beforeend', getTodoListHtml(inputObj.value));
         inputObj.value = "";
     }
 }
+
+window.addEventListener('load', async () => {
+    const todoUlContainer = document.querySelector('.todo-ul-container');
+    const todoUl = todoUlContainer.querySelector('.todo-ul');
+
+    const resData = await axios({
+        method: 'get',
+        url: '/api/todos/',
+    })
+    .then((response) => {
+        return response.data
+    })
+    .catch((err) => {
+        console.error(err);
+    });
+
+    if (resData) {
+        // todoUl.insertAdjacentHTML('beforeend', getTodoListHtml(inputObj.value));
+        // inputObj.value = "";
+        console.log(resData);
+    }
+
+});

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -18,6 +19,10 @@ type Success struct {
 	Flag bool `json:"success"`
 }
 
+type AddTodoDTO struct {
+	Content string
+}
+
 type APIHandler struct {
 	http.Handler
 }
@@ -26,9 +31,18 @@ func (a *APIHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "API Handler Index")
 }
 
+func (a *APIHandler) getTodoListHandler(w http.ResponseWriter, r *http.Request) {
+	list := model.GetTodos()
+	rd.JSON(w, http.StatusOK, list)
+}
+
 func (a *APIHandler) addTodoHandler(w http.ResponseWriter, r *http.Request) {
-	content := r.FormValue("content")
-	todo := model.AddTodo(content)
+	var body AddTodoDTO
+	err := json.NewDecoder(r.Body).Decode(&body)
+	if err != nil {
+		rd.JSON(w, http.StatusBadRequest, nil)
+	}
+	todo := model.AddTodo(body.Content)
 	rd.JSON(w, http.StatusCreated, todo)
 }
 
@@ -57,6 +71,7 @@ func APIHttpHandler() *APIHandler {
 
 	r.HandleFunc("/api/", a.indexHandler)
 
+	r.HandleFunc("/api/todos/", a.getTodoListHandler).Methods("GET")
 	r.HandleFunc("/api/todos/", a.addTodoHandler).Methods("POST")
 	r.HandleFunc("/api/todos/", a.removeTodoHandler).Methods("DELETE")
 

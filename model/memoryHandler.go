@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -8,9 +9,18 @@ type memoryHandler struct {
 	todoMap map[int]*Todo
 }
 
-func (m *memoryHandler) addTodo(name string) *Todo {
+func (m *memoryHandler) getTodos() []*Todo {
+	list := []*Todo{}
+	for _, v := range m.todoMap {
+		fmt.Println(v)
+		list = append(list, v)
+	}
+	return list
+}
+
+func (m *memoryHandler) addTodo(content string) *Todo {
 	id := len(m.todoMap) + 1
-	todo := &Todo{id, name, false, time.Now()}
+	todo := &Todo{id, content, false, time.Now()}
 	m.todoMap[id] = todo
 	return todo
 }

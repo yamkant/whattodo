@@ -6,13 +6,14 @@ import (
 
 type Todo struct {
 	ID        int       `json:"id"`
-	Content   string    `json:"name"`
+	Content   string    `json:"content"`
 	Completed bool      `json:"completed"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
 type dbHandler interface {
-	addTodo(name string) *Todo
+	getTodos() []*Todo
+	addTodo(content string) *Todo
 	removeTodo(id int) bool
 	// Close()
 }
@@ -23,8 +24,12 @@ func init() {
 	handler = newMemoryHandler()
 }
 
-func AddTodo(name string) *Todo {
-	return handler.addTodo(name)
+func GetTodos() []*Todo {
+	return handler.getTodos()
+}
+
+func AddTodo(content string) *Todo {
+	return handler.addTodo(content)
 }
 
 func RemoveTodo(id int) bool {
