@@ -124,17 +124,28 @@ const onClickDone = (target) => {
     }
 }
 
-const onClickSubmitBtn = (target) => {
+const onClickAddBtn = async (target) => {
     const todoUlContainer = document.querySelector('.todo-ul-container');
     const todoUl = todoUlContainer.querySelector('.todo-ul');
 
     const inputObj = target.closest('.todo-form').querySelector('input');
 
-    // TODO: API 요청이 정상인 경우에만 TODO를 생성
-    todoUl.insertAdjacentHTML('beforeend', getTodoListHtml(inputObj.value));
-    inputObj.value = "";
+    const res = await axios({
+        method: 'post',
+        url: '/api/todos/',
+        data: {
+            content: inputObj.value,
+        }
+    })
+    .then((response) => {
+        return response.data
+    })
+    .catch((err) => {
+        console.error(err);
+    });
+
+    if (res) {
+        todoUl.insertAdjacentHTML('beforeend', getTodoListHtml(inputObj.value));
+        inputObj.value = "";
+    }
 }
-// window.addEventListener('load', () => {
-
-
-// });
