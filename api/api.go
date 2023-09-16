@@ -73,7 +73,7 @@ func APIHttpHandler() *APIHandler {
 
 	r.HandleFunc("/api/todos/", a.getTodoListHandler).Methods("GET")
 	r.HandleFunc("/api/todos/", a.addTodoHandler).Methods("POST")
-	r.HandleFunc("/api/todos/", a.removeTodoHandler).Methods("DELETE")
+	r.HandleFunc("/api/todos/{id}/", a.removeTodoHandler).Methods("DELETE")
 
 	return a
 }

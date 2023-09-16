@@ -1,4 +1,4 @@
-const getTodoListHtml = (todoContent) => {
+const getTodoListHtml = (item_id, item_content) => {
     function getUuidv4() {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
           var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -7,7 +7,7 @@ const getTodoListHtml = (todoContent) => {
     }
     const uuid = getUuidv4();
     return `
-        <li class="todo-item flex items-center text-lg">
+        <li data-value=${item_id} class="todo-item flex items-center text-lg">
             <div class="flex flex-col w-full items-start">
                 <div class="flex w-full justify-between">
                     <div class="checkbox-container flex">
@@ -22,7 +22,7 @@ const getTodoListHtml = (todoContent) => {
                                 <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
                             </svg>
                         </label>
-                        <div class="text-ellipsis overflow-hidden">${todoContent}</div>
+                        <div class="text-ellipsis overflow-hidden">${item_content}</div>
                     </div>
                 </div>
 
@@ -96,14 +96,12 @@ const onClickGetEndTime = (target) => {
 }
 
 const onClickRemoveTodo = async (target) => {
-    const inputObj = target.closest('.todo-item');
+    const listObj = target.closest('li');
+    const itemId = listObj.dataset.value;
     if (confirm("Are you sure you want to remove?")) {
         const res = await axios({
             method: 'delete',
-            url: '/api/todos/',
-            data: {
-                content: inputObj.value,
-            }
+            url: `/api/todos/${itemId}/`,
         })
         .then((response) => {
             return response.data
@@ -112,7 +110,7 @@ const onClickRemoveTodo = async (target) => {
             console.error(err);
         });
         if (res) {
-            inputObj.remove();
+            listObj.remove();
         }
     }
 }
@@ -162,8 +160,7 @@ const onClickAddBtn = async (target) => {
     });
 
     if (resData) {
-        console.log(resData)
-        todoUl.insertAdjacentHTML('beforeend', getTodoListHtml(inputObj.value));
+        todoUl.insertAdjacentHTML('afterbegin', getTodoListHtml(resData.id, resData.content));
         inputObj.value = "";
     }
 }
@@ -184,9 +181,8 @@ window.addEventListener('load', async () => {
     });
 
     if (resData) {
-        // todoUl.insertAdjacentHTML('beforeend', getTodoListHtml(inputObj.value));
-        // inputObj.value = "";
-        console.log(resData);
+        for (const data of resData) {
+            todoUl.insertAdjacentHTML('beforeend', getTodoListHtml(data.id, data.content));
+        }
     }
-
 });
