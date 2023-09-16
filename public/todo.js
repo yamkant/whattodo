@@ -95,11 +95,25 @@ const onClickGetEndTime = (target) => {
     // TODO: API을 통한 정상적인 시간 기록 후에 아이템 생성
 }
 
-const onClickRemoveTodo = (target) => {
-    // TODO: API 요청이 정상인 경우에만 TODO를 제거
+const onClickRemoveTodo = async (target) => {
+    const inputObj = target.closest('.todo-item');
     if (confirm("Are you sure you want to remove?")) {
-        const inputObj = target.closest('.todo-item');
-        inputObj.remove();
+        const res = await axios({
+            method: 'delete',
+            url: '/api/todos/',
+            data: {
+                content: inputObj.value,
+            }
+        })
+        .then((response) => {
+            return response.data
+        })
+        .catch((err) => {
+            console.error(err);
+        });
+        if (res) {
+            inputObj.remove();
+        }
     }
 }
 

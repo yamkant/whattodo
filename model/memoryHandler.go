@@ -15,6 +15,14 @@ func (m *memoryHandler) addTodo(name string) *Todo {
 	return todo
 }
 
+func (m *memoryHandler) removeTodo(id int) bool {
+	if _, ok := m.todoMap[id]; ok {
+		delete(m.todoMap, id)
+		return true
+	}
+	return false
+}
+
 func newMemoryHandler() dbHandler {
 	m := &memoryHandler{}
 	m.todoMap = make(map[int]*Todo)

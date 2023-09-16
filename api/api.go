@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"example.com/m/model"
 	"github.com/gorilla/mux"
@@ -32,9 +33,14 @@ func (a *APIHandler) addTodoHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *APIHandler) removeTodoHandler(w http.ResponseWriter, r *http.Request) {
-	content := r.FormValue("content")
-	todo := model.AddTodo(content)
-	rd.JSON(w, http.StatusCreated, todo)
+	vars := mux.Vars(r)
+	id, _ := strconv.Atoi(vars["id"])
+	ok := model.RemoveTodo(id)
+	if ok {
+		rd.JSON(w, http.StatusOK, Success{true})
+	} else {
+		rd.JSON(w, http.StatusOK, Success{false})
+	}
 }
 
 func APIHttpHandler() *APIHandler {
@@ -52,6 +58,7 @@ func APIHttpHandler() *APIHandler {
 	r.HandleFunc("/api/", a.indexHandler)
 
 	r.HandleFunc("/api/todos/", a.addTodoHandler).Methods("POST")
+	r.HandleFunc("/api/todos/", a.removeTodoHandler).Methods("DELETE")
 
 	return a
 }

@@ -13,6 +13,7 @@ type Todo struct {
 
 type dbHandler interface {
 	addTodo(name string) *Todo
+	removeTodo(id int) bool
 	// Close()
 }
 
@@ -24,4 +25,8 @@ func init() {
 
 func AddTodo(name string) *Todo {
 	return handler.addTodo(name)
+}
+
+func RemoveTodo(id int) bool {
+	return handler.removeTodo(id)
 }
