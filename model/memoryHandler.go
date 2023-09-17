@@ -25,9 +25,17 @@ func (m *memoryHandler) getTodos() []*Todo {
 
 func (m *memoryHandler) addTodo(content string) *Todo {
 	id := len(m.todoMap) + 1
-	todo := &Todo{id, content, false, time.Now()}
+	todo := &Todo{id, content, false, time.Time{}, time.Time{}, time.Now()}
 	m.todoMap[id] = todo
 	return todo
+}
+
+func (m *memoryHandler) updateTodo(id int, completed bool) bool {
+	if todo, ok := m.todoMap[id]; ok {
+		todo.Completed = completed
+		return true
+	}
+	return false
 }
 
 func (m *memoryHandler) removeTodo(id int) bool {

@@ -8,12 +8,15 @@ type Todo struct {
 	ID        int       `json:"id"`
 	Content   string    `json:"content"`
 	Completed bool      `json:"completed"`
+	StartedAt time.Time `json:"started_at"`
+	EndedAt   time.Time `json:"ended_at"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
 type dbHandler interface {
 	getTodos() []*Todo
 	addTodo(content string) *Todo
+	updateTodo(id int, completed bool) bool
 	removeTodo(id int) bool
 	// Close()
 }
@@ -30,6 +33,10 @@ func GetTodos() []*Todo {
 
 func AddTodo(content string) *Todo {
 	return handler.addTodo(content)
+}
+
+func UpdateTodo(id int, completed bool) bool {
+	return handler.updateTodo(id, completed)
 }
 
 func RemoveTodo(id int) bool {

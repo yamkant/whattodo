@@ -1,4 +1,18 @@
-const getTodoListHtml = (item_id, item_content) => {
+const getCheckboxLabelValue = (checked) => {
+    return checked ? `
+        <svg class="w-6 h-6 mr-2 text-green-500 dark:text-green-400 flex-shrink-0" aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <path
+                d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
+        </svg>
+    ` : `
+        <svg class="w-6 h-6 mr-2 text-gray-500 dark:text-gray-400 flex-shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+        </svg>
+    `;
+}
+
+const getTodoListHtml = (itemInfo) => {
     function getUuidv4() {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
           var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -6,8 +20,12 @@ const getTodoListHtml = (item_id, item_content) => {
         });
     }
     const uuid = getUuidv4();
+    const startedAtValue = itemInfo.started_at.slice(11, 16) === '00:00' ? "" : itemInfo.started_at.slice(11, 16);
+    const endedAtValue = itemInfo.ended_at.slice(11, 16) === '00:00' ? "" : itemInfo.ended_at.slice(11, 16);
+    const checkboxLabel = getCheckboxLabelValue(itemInfo.completed);
+
     return `
-        <li data-value=${item_id} class="todo-item flex items-center text-lg">
+        <li data-value=${itemInfo.id} class="todo-item flex items-center text-lg">
             <div class="flex flex-col w-full items-start">
                 <div class="flex w-full justify-between">
                     <div class="checkbox-container flex">
@@ -18,11 +36,9 @@ const getTodoListHtml = (item_id, item_content) => {
                             id="checkbox-${uuid}"
                         >
                         <label for="checkbox-${uuid}">
-                            <svg class="w-6 h-6 mr-2 text-gray-500 dark:text-gray-400 flex-shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
-                            </svg>
+                            ${checkboxLabel}
                         </label>
-                        <div class="text-ellipsis overflow-hidden">${item_content}</div>
+                        <div class="text-ellipsis overflow-hidden">${itemInfo.content}</div>
                     </div>
                 </div>
 
@@ -36,7 +52,7 @@ const getTodoListHtml = (item_id, item_content) => {
                                 <path d="M5 4.98402V19.016C5.00305 19.1907 5.05178 19.3614 5.14135 19.5114C5.23092 19.6613 5.3582 19.7852 5.51052 19.8707C5.66284 19.9561 5.83489 20.0002 6.00955 19.9985C6.1842 19.9968 6.35536 19.9494 6.506 19.861L18.512 12.845C18.6605 12.7595 18.7839 12.6364 18.8696 12.4881C18.9554 12.3397 19.0006 12.1714 19.0006 12C19.0006 11.8287 18.9554 11.6603 18.8696 11.512C18.7839 11.3636 18.6605 11.2405 18.512 11.155L6.506 4.13902C6.35536 4.05062 6.1842 4.00321 6.00955 4.00151C5.83489 3.99982 5.66284 4.0439 5.51052 4.12936C5.3582 4.21483 5.23092 4.3387 5.14135 4.48865C5.05178 4.6386 5.00305 4.80939 5 4.98402Z" fill="#2F2F38"/>
                             </svg>
                         </button>
-                        <input class="w-28 border-2 pl-2" value="" type="time">
+                        <input class="w-28 border-2 pl-2" value="${startedAtValue}" type="time">
                     </div>
                     <div class="end-time-container flex">
                         <button
@@ -48,7 +64,7 @@ const getTodoListHtml = (item_id, item_content) => {
                                 <path d="M16 4H15C13.8954 4 13 4.89543 13 6V18C13 19.1046 13.8954 20 15 20H16C17.1046 20 18 19.1046 18 18V6C18 4.89543 17.1046 4 16 4Z" fill="#2F2F38"/>
                             </svg>
                         </button>
-                        <input class="w-28 border-2 pl-2" value="" type="time">
+                        <input class="w-28 border-2 pl-2" value="${endedAtValue}" type="time">
                     </div>
                     <button onclick="onClickRemoveTodo(this)" class="mb-1">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -115,24 +131,35 @@ const onClickRemoveTodo = async (target) => {
     }
 }
 
-const onClickDone = (target) => {
-    // TODO: API 요청이 정상인 경우에만 TODO를 완료
+const setCheckBoxByChecked = (target) => {
     const targetLabel = target.closest('.checkbox-container').querySelector('label');
-    if (target.checked) {
-        targetLabel.innerHTML = `
-            <svg class="w-6 h-6 mr-2 text-green-500 dark:text-green-400 flex-shrink-0" aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                    d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
-            </svg>
-        `;
-    } else {
-        targetLabel.innerHTML = `
-            <svg class="w-6 h-6 mr-2 text-gray-500 dark:text-gray-400 flex-shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
-            </svg>
-        `;
+    targetLabel.innerHTML = getCheckboxLabelValue(target.checked);
+}
 
+const onClickDone = async (target) => {
+    const listObj = target.closest('li');
+    const item_id = listObj.dataset.value;
+    // TODO: API 요청이 정상인 경우에만 TODO를 완료
+
+    const resData = await axios({
+        method: 'patch',
+        url: `/api/todos/${item_id}/`,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: {
+            completed: target.checked,
+        }
+    })
+    .then((response) => {
+        return response.data
+    })
+    .catch((err) => {
+        console.error(err);
+    });
+
+    if (resData) {
+        setCheckBoxByChecked(target);
     }
 }
 
@@ -160,7 +187,7 @@ const onClickAddBtn = async (target) => {
     });
 
     if (resData) {
-        todoUl.insertAdjacentHTML('afterbegin', getTodoListHtml(resData.id, resData.content));
+        todoUl.insertAdjacentHTML('afterbegin', getTodoListHtml(resData));
         inputObj.value = "";
     }
 }
@@ -182,7 +209,7 @@ window.addEventListener('load', async () => {
 
     if (resData) {
         for (const data of resData) {
-            todoUl.insertAdjacentHTML('beforeend', getTodoListHtml(data.id, data.content));
+            todoUl.insertAdjacentHTML('beforeend', getTodoListHtml(data));
         }
     }
 });
