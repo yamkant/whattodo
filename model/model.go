@@ -16,7 +16,7 @@ type Todo struct {
 type dbHandler interface {
 	getTodos() []*Todo
 	addTodo(content string) *Todo
-	updateTodo(id int, completed bool) bool
+	updateTodo(id int, completed bool, startedAt time.Time, endedAt time.Time) bool
 	removeTodo(id int) bool
 	// Close()
 }
@@ -35,8 +35,8 @@ func AddTodo(content string) *Todo {
 	return handler.addTodo(content)
 }
 
-func UpdateTodo(id int, completed bool) bool {
-	return handler.updateTodo(id, completed)
+func UpdateTodo(id int, completed bool, startedAt time.Time, endedAt time.Time) bool {
+	return handler.updateTodo(id, completed, startedAt, endedAt)
 }
 
 func RemoveTodo(id int) bool {

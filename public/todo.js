@@ -12,6 +12,10 @@ const getCheckboxLabelValue = (checked) => {
     `;
 }
 
+const displayDateTime = (dateTime) => {
+    return dateTime.slice(11, 16) === '00:00' ? "" : dateTime.slice(11, 16);
+}
+
 const getTodoListHtml = (itemInfo) => {
     function getUuidv4() {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -20,9 +24,10 @@ const getTodoListHtml = (itemInfo) => {
         });
     }
     const uuid = getUuidv4();
-    const startedAtValue = itemInfo.started_at.slice(11, 16) === '00:00' ? "" : itemInfo.started_at.slice(11, 16);
-    const endedAtValue = itemInfo.ended_at.slice(11, 16) === '00:00' ? "" : itemInfo.ended_at.slice(11, 16);
+    const startedAtValue = displayDateTime(itemInfo.started_at);
+    const endedAtValue = displayDateTime(itemInfo.ended_at);
     const checkboxLabel = getCheckboxLabelValue(itemInfo.completed);
+    const checkedStatus = itemInfo.completed ? "checked" : "";
 
     return `
         <li data-value=${itemInfo.id} class="todo-item flex items-center text-lg">
@@ -32,8 +37,9 @@ const getTodoListHtml = (itemInfo) => {
                         <input
                             type="checkbox"
                             class="hidden"
-                            onclick="onClickDone(this)"
+                            onclick="onClickTodoItemUpdate(this, 'c')"
                             id="checkbox-${uuid}"
+                            ${checkedStatus}
                         >
                         <label for="checkbox-${uuid}">
                             ${checkboxLabel}
@@ -45,18 +51,18 @@ const getTodoListHtml = (itemInfo) => {
                 <div class="controller-container w-full flex justify-end space-x-2 text-sm py-2">
                     <div class="start-time-container flex">
                         <button
-                            onclick="onClickGetStartTime(this)"
+                            onclick="onClickTodoItemUpdate(this, 's')"
                             class="mb-1 mr-1"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                                 <path d="M5 4.98402V19.016C5.00305 19.1907 5.05178 19.3614 5.14135 19.5114C5.23092 19.6613 5.3582 19.7852 5.51052 19.8707C5.66284 19.9561 5.83489 20.0002 6.00955 19.9985C6.1842 19.9968 6.35536 19.9494 6.506 19.861L18.512 12.845C18.6605 12.7595 18.7839 12.6364 18.8696 12.4881C18.9554 12.3397 19.0006 12.1714 19.0006 12C19.0006 11.8287 18.9554 11.6603 18.8696 11.512C18.7839 11.3636 18.6605 11.2405 18.512 11.155L6.506 4.13902C6.35536 4.05062 6.1842 4.00321 6.00955 4.00151C5.83489 3.99982 5.66284 4.0439 5.51052 4.12936C5.3582 4.21483 5.23092 4.3387 5.14135 4.48865C5.05178 4.6386 5.00305 4.80939 5 4.98402Z" fill="#2F2F38"/>
                             </svg>
                         </button>
-                        <input class="w-28 border-2 pl-2" value="${startedAtValue}" type="time">
+                        <input class="w-28 border-2 pl-2" value="${startedAtValue}" data-value="${itemInfo.started_at}" type="time">
                     </div>
                     <div class="end-time-container flex">
                         <button
-                            onclick="onClickGetEndTime(this)"
+                            onclick="onClickTodoItemUpdate(this, 'e')"
                             class="mb-1 mr-1"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -64,7 +70,7 @@ const getTodoListHtml = (itemInfo) => {
                                 <path d="M16 4H15C13.8954 4 13 4.89543 13 6V18C13 19.1046 13.8954 20 15 20H16C17.1046 20 18 19.1046 18 18V6C18 4.89543 17.1046 4 16 4Z" fill="#2F2F38"/>
                             </svg>
                         </button>
-                        <input class="w-28 border-2 pl-2" value="${endedAtValue}" type="time">
+                        <input class="w-28 border-2 pl-2" value="${endedAtValue}" data-value="${itemInfo.ended_at}" type="time">
                     </div>
                     <button onclick="onClickRemoveTodo(this)" class="mb-1">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -90,25 +96,71 @@ const toISOStringWithTimezone = date => {
         diff + pad(tzOffset / 60) +
         ':' + pad(tzOffset % 60);
 };
+const onClickTodoItemUpdate = async (target, type) => {
+    const todoItemObj = target.closest('.todo-item')
+    // start time
+    const startInputObj = todoItemObj.querySelector('.start-time-container>input')
+    const startTime = toISOStringWithTimezone(new Date())
 
-const onClickGetStartTime = (target) => {
-    const inputObj = target.closest('.start-time-container').querySelector('input')
-    inputObj.value = toISOStringWithTimezone(new Date()).slice(11, 16);
-    // NOTE: starttime 지정시 endtime 제거
-    const endTimeInputObj = target.closest('.controller-container').querySelector('.end-time-container>input');
-    endTimeInputObj.value = "";
-    // TODO: API을 통한 정상적인 시간 기록 후에 아이템 생성
-}
+    // end time
+    const endInputObj = todoItemObj.querySelector('.end-time-container>input')
+    const endTime = toISOStringWithTimezone(new Date())
 
-const onClickGetEndTime = (target) => {
-    const inputObj = target.closest('.end-time-container').querySelector('input')
-    inputObj.value = toISOStringWithTimezone(new Date()).slice(11, 16);
+    // checked
+    const checkboxInputObj = todoItemObj.querySelector('input[type="checkbox"]')
+    console.log("CHECKED:", checkboxInputObj.checked)
 
-    const startTimeInputObj = target.closest('.controller-container').querySelector('.start-time-container>input');
-    if (startTimeInputObj.value === "") {
-        startTimeInputObj.value = inputObj.value;
+    const data = {}
+    switch (type) {
+        case 's':
+            data.started_at = startTime;
+            data.completed = checkboxInputObj.checked;
+            break;
+        case 'e':
+            data.started_at = startInputObj.dataset.value;
+            data.ended_at = endTime;
+            data.completed = checkboxInputObj.checked;
+            break;
+        case 'c':
+            data.started_at = startInputObj.dataset.value;
+            data.ended_at = endInputObj.dataset.value;
+            data.completed = checkboxInputObj.checked;
+        default:
+            break;
     }
-    // TODO: API을 통한 정상적인 시간 기록 후에 아이템 생성
+
+    const item_id = target.closest('li').dataset.value;
+    const resData = await axios({
+        method: 'patch',
+        url: `/api/todos/${item_id}/`,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: data,
+    }).then((response) => {
+        return response.data
+    }).catch((err) => {
+        console.error(err);
+    });
+
+    if (resData) {
+        switch (type) {
+            case 's':
+                startInputObj.value = startTime.slice(11, 16);
+                break;
+            case 'e':
+                startInputObj.value = displayDateTime(startInputObj.dataset.value);
+                endInputObj.value = endTime.slice(11, 16);
+                break;
+            case 'c':
+                startInputObj.value = displayDateTime(startInputObj.dataset.value);
+                endInputObj.value = displayDateTime(endInputObj.dataset.value);
+                setCheckBoxByChecked(checkboxInputObj);
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 const onClickRemoveTodo = async (target) => {
@@ -134,33 +186,6 @@ const onClickRemoveTodo = async (target) => {
 const setCheckBoxByChecked = (target) => {
     const targetLabel = target.closest('.checkbox-container').querySelector('label');
     targetLabel.innerHTML = getCheckboxLabelValue(target.checked);
-}
-
-const onClickDone = async (target) => {
-    const listObj = target.closest('li');
-    const item_id = listObj.dataset.value;
-    // TODO: API 요청이 정상인 경우에만 TODO를 완료
-
-    const resData = await axios({
-        method: 'patch',
-        url: `/api/todos/${item_id}/`,
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        data: {
-            completed: target.checked,
-        }
-    })
-    .then((response) => {
-        return response.data
-    })
-    .catch((err) => {
-        console.error(err);
-    });
-
-    if (resData) {
-        setCheckBoxByChecked(target);
-    }
 }
 
 const onClickAddBtn = async (target) => {

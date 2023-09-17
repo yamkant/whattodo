@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"example.com/m/model"
 	"github.com/gorilla/mux"
@@ -24,7 +25,9 @@ type AddTodoDTO struct {
 }
 
 type UpdateTodoDTO struct {
-	Completed bool
+	StartedAt time.Time `json:"started_at"`
+	EndedAt   time.Time `json:"ended_at"`
+	Completed bool      `json:"completed"`
 }
 
 type APIHandler struct {
@@ -72,7 +75,8 @@ func (a *APIHandler) updateTodoHandler(w http.ResponseWriter, r *http.Request) {
 		rd.JSON(w, http.StatusBadRequest, nil)
 	}
 
-	ok := model.UpdateTodo(id, body.Completed)
+	fmt.Println(body.Completed, body.StartedAt, body.EndedAt)
+	ok := model.UpdateTodo(id, body.Completed, body.StartedAt, body.EndedAt)
 	if ok {
 		rd.JSON(w, http.StatusOK, Success{true})
 	} else {

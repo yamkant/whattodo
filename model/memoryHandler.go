@@ -13,7 +13,7 @@ type memoryHandler struct {
 func (m *memoryHandler) getTodos() []*Todo {
 	list := []*Todo{}
 	for _, v := range m.todoMap {
-		fmt.Println(v)
+		fmt.Print(v.Completed, v.StartedAt, v.EndedAt)
 		list = append(list, v)
 	}
 
@@ -30,8 +30,10 @@ func (m *memoryHandler) addTodo(content string) *Todo {
 	return todo
 }
 
-func (m *memoryHandler) updateTodo(id int, completed bool) bool {
+func (m *memoryHandler) updateTodo(id int, completed bool, startedAt time.Time, endedAt time.Time) bool {
 	if todo, ok := m.todoMap[id]; ok {
+		todo.StartedAt = startedAt
+		todo.EndedAt = endedAt
 		todo.Completed = completed
 		return true
 	}
