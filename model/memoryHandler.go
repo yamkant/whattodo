@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"sort"
 	"time"
 )
@@ -10,11 +9,12 @@ type memoryHandler struct {
 	todoMap map[int]*Todo
 }
 
-func (m *memoryHandler) GetTodos() []*Todo {
+func (m *memoryHandler) GetTodos(sessionId string) []*Todo {
 	list := []*Todo{}
 	for _, v := range m.todoMap {
-		fmt.Print(v.Completed, v.StartedAt, v.EndedAt)
-		list = append(list, v)
+		if v.SessionId == sessionId {
+			list = append(list, v)
+		}
 	}
 
 	sort.Slice(list, func(i, j int) bool {
@@ -23,9 +23,9 @@ func (m *memoryHandler) GetTodos() []*Todo {
 	return list
 }
 
-func (m *memoryHandler) AddTodo(content string) *Todo {
+func (m *memoryHandler) AddTodo(sessionId string, content string) *Todo {
 	id := len(m.todoMap) + 1
-	todo := &Todo{id, content, false, time.Time{}, time.Time{}, time.Now()}
+	todo := &Todo{id, sessionId, content, false, time.Time{}, time.Time{}, time.Now()}
 	m.todoMap[id] = todo
 	return todo
 }

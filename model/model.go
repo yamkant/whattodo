@@ -6,6 +6,7 @@ import (
 
 type Todo struct {
 	ID        int       `json:"id"`
+	SessionId string    `json:"session_id"`
 	Content   string    `json:"content"`
 	Completed bool      `json:"completed"`
 	StartedAt time.Time `json:"started_at"`
@@ -14,8 +15,8 @@ type Todo struct {
 }
 
 type DBHandler interface {
-	GetTodos() []*Todo
-	AddTodo(content string) *Todo
+	GetTodos(sessionId string) []*Todo
+	AddTodo(sessionId string, content string) *Todo
 	UpdateTodo(id int, completed bool, startedAt time.Time, endedAt time.Time) bool
 	RemoveTodo(id int) bool
 	// Close()
