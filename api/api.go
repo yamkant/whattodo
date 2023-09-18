@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"example.com/m/auth"
 	"example.com/m/model"
 	"github.com/gorilla/mux"
 	"github.com/unrolled/render"
@@ -40,18 +41,19 @@ func (a *APIHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *APIHandler) getTodoListHandler(w http.ResponseWriter, r *http.Request) {
-	list := a.db.GetTodos()
-	fmt.Println(list)
+	sessionId := auth.GetSessionID(r)
+	list := a.db.GetTodos(sessionId)
 	rd.JSON(w, http.StatusOK, list)
 }
 
 func (a *APIHandler) addTodoHandler(w http.ResponseWriter, r *http.Request) {
 	var body AddTodoDTO
+	sessionId := auth.GetSessionID(r)
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
 		rd.JSON(w, http.StatusBadRequest, nil)
 	}
-	todo := a.db.AddTodo(body.Content)
+	todo := a.db.AddTodo(sessionId, body.Content)
 	rd.JSON(w, http.StatusCreated, todo)
 }
 

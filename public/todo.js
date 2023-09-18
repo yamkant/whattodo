@@ -23,6 +23,7 @@ const getTodoListHtml = (itemInfo) => {
             return v.toString(16);
         });
     }
+    
     const uuid = getUuidv4();
     const startedAtValue = displayDateTime(itemInfo.started_at);
     const endedAtValue = displayDateTime(itemInfo.ended_at);
