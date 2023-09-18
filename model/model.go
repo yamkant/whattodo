@@ -13,32 +13,14 @@ type Todo struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-type dbHandler interface {
-	getTodos() []*Todo
-	addTodo(content string) *Todo
-	updateTodo(id int, completed bool, startedAt time.Time, endedAt time.Time) bool
-	removeTodo(id int) bool
+type DBHandler interface {
+	GetTodos() []*Todo
+	AddTodo(content string) *Todo
+	UpdateTodo(id int, completed bool, startedAt time.Time, endedAt time.Time) bool
+	RemoveTodo(id int) bool
 	// Close()
 }
 
-var handler dbHandler
-
-func init() {
-	handler = newMemoryHandler()
-}
-
-func GetTodos() []*Todo {
-	return handler.getTodos()
-}
-
-func AddTodo(content string) *Todo {
-	return handler.addTodo(content)
-}
-
-func UpdateTodo(id int, completed bool, startedAt time.Time, endedAt time.Time) bool {
-	return handler.updateTodo(id, completed, startedAt, endedAt)
-}
-
-func RemoveTodo(id int) bool {
-	return handler.removeTodo(id)
+func NewDBHandler() DBHandler {
+	return newMemoryHandler()
 }

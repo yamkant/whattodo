@@ -10,7 +10,7 @@ type memoryHandler struct {
 	todoMap map[int]*Todo
 }
 
-func (m *memoryHandler) getTodos() []*Todo {
+func (m *memoryHandler) GetTodos() []*Todo {
 	list := []*Todo{}
 	for _, v := range m.todoMap {
 		fmt.Print(v.Completed, v.StartedAt, v.EndedAt)
@@ -23,14 +23,14 @@ func (m *memoryHandler) getTodos() []*Todo {
 	return list
 }
 
-func (m *memoryHandler) addTodo(content string) *Todo {
+func (m *memoryHandler) AddTodo(content string) *Todo {
 	id := len(m.todoMap) + 1
 	todo := &Todo{id, content, false, time.Time{}, time.Time{}, time.Now()}
 	m.todoMap[id] = todo
 	return todo
 }
 
-func (m *memoryHandler) updateTodo(id int, completed bool, startedAt time.Time, endedAt time.Time) bool {
+func (m *memoryHandler) UpdateTodo(id int, completed bool, startedAt time.Time, endedAt time.Time) bool {
 	if todo, ok := m.todoMap[id]; ok {
 		todo.StartedAt = startedAt
 		todo.EndedAt = endedAt
@@ -40,7 +40,7 @@ func (m *memoryHandler) updateTodo(id int, completed bool, startedAt time.Time, 
 	return false
 }
 
-func (m *memoryHandler) removeTodo(id int) bool {
+func (m *memoryHandler) RemoveTodo(id int) bool {
 	if _, ok := m.todoMap[id]; ok {
 		delete(m.todoMap, id)
 		return true
@@ -48,7 +48,7 @@ func (m *memoryHandler) removeTodo(id int) bool {
 	return false
 }
 
-func newMemoryHandler() dbHandler {
+func newMemoryHandler() DBHandler {
 	m := &memoryHandler{}
 	m.todoMap = make(map[int]*Todo)
 	return m
