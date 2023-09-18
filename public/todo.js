@@ -108,7 +108,6 @@ const onClickTodoItemUpdate = async (target, type) => {
 
     // checked
     const checkboxInputObj = todoItemObj.querySelector('input[type="checkbox"]')
-    console.log("CHECKED:", checkboxInputObj.checked)
 
     const data = {}
     switch (type) {

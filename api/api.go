@@ -32,6 +32,7 @@ type UpdateTodoDTO struct {
 
 type APIHandler struct {
 	http.Handler
+	db model.DBHandler
 }
 
 func (a *APIHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -39,7 +40,7 @@ func (a *APIHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *APIHandler) getTodoListHandler(w http.ResponseWriter, r *http.Request) {
-	list := model.GetTodos()
+	list := a.db.GetTodos()
 	fmt.Println(list)
 	rd.JSON(w, http.StatusOK, list)
 }
@@ -50,14 +51,14 @@ func (a *APIHandler) addTodoHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		rd.JSON(w, http.StatusBadRequest, nil)
 	}
-	todo := model.AddTodo(body.Content)
+	todo := a.db.AddTodo(body.Content)
 	rd.JSON(w, http.StatusCreated, todo)
 }
 
 func (a *APIHandler) removeTodoHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
-	ok := model.RemoveTodo(id)
+	ok := a.db.RemoveTodo(id)
 	if ok {
 		rd.JSON(w, http.StatusOK, Success{true})
 	} else {
@@ -75,8 +76,7 @@ func (a *APIHandler) updateTodoHandler(w http.ResponseWriter, r *http.Request) {
 		rd.JSON(w, http.StatusBadRequest, nil)
 	}
 
-	fmt.Println(body.Completed, body.StartedAt, body.EndedAt)
-	ok := model.UpdateTodo(id, body.Completed, body.StartedAt, body.EndedAt)
+	ok := a.db.UpdateTodo(id, body.Completed, body.StartedAt, body.EndedAt)
 	if ok {
 		rd.JSON(w, http.StatusOK, Success{true})
 	} else {
@@ -94,6 +94,7 @@ func APIHttpHandler() *APIHandler {
 
 	a := &APIHandler{
 		Handler: n,
+		db:      model.NewDBHandler(),
 	}
 
 	r.HandleFunc("/api/", a.indexHandler)
