@@ -12,6 +12,7 @@ import (
 	"os"
 	"time"
 
+	"example.com/m/model"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/unrolled/render"
@@ -103,14 +104,17 @@ func googleAuthCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Set some session values.
 	session.Values["id"] = userInfo.ID
-	// Save it before we write to the response/return from the handler.
 	err = session.Save(r, w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	// Join User
+	db := model.NewDBHandler()
+	db.AddUser(userInfo.Email, userInfo.ID)
+
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
 

@@ -7,7 +7,7 @@ import (
 
 type memoryHandler struct {
 	todoMap map[int]*Todo
-	userMap map[int]*Todo
+	userMap map[int]*User
 }
 
 // API TODO
@@ -50,8 +50,17 @@ func (m *memoryHandler) RemoveTodo(id int) bool {
 	return false
 }
 
+// API USER
+func (m *memoryHandler) AddUser(email string, sessionId string) *User {
+	id := len(m.userMap) + 1
+	user := &User{id, email, sessionId, time.Now()}
+	m.userMap[id] = user
+	return user
+}
+
 func newMemoryHandler() DBHandler {
 	m := &memoryHandler{}
 	m.todoMap = make(map[int]*Todo)
+	m.userMap = make(map[int]*User)
 	return m
 }
