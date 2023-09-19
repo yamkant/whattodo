@@ -28,6 +28,7 @@ type DBHandler interface {
 	RemoveTodo(id int) bool
 
 	AddUser(email string, sessionId string) *User
+	GetUserBySessionId(sessionId string) *User
 	// Close()
 }
 

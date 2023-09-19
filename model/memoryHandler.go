@@ -58,6 +58,16 @@ func (m *memoryHandler) AddUser(email string, sessionId string) *User {
 	return user
 }
 
+func (m *memoryHandler) GetUserBySessionId(sessionId string) *User {
+	var retUser *User
+	for _, user := range m.userMap {
+		if user.SessionId == sessionId {
+			retUser = user
+		}
+	}
+	return retUser
+}
+
 func newMemoryHandler() DBHandler {
 	m := &memoryHandler{}
 	m.todoMap = make(map[int]*Todo)

@@ -1,11 +1,11 @@
 package web
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 
 	_ "example.com/m/auth"
+	"example.com/m/model"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/unrolled/render"
@@ -21,7 +21,6 @@ type Context struct {
 
 func getSessionId(r *http.Request) (string, error) {
 	session, err := store.Get(r, "session")
-	fmt.Println("session", session)
 	if err != nil {
 		return "", err
 	}
@@ -41,7 +40,11 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if sessionId == "" {
 		http.Redirect(w, r, "/auth/google/login", http.StatusTemporaryRedirect)
 	}
-	webRd.HTML(w, http.StatusOK, "main", nil)
+
+	// Join User
+	db := model.NewDBHandler()
+	user := db.GetUserBySessionId(sessionId)
+	webRd.HTML(w, http.StatusOK, "todo", user)
 }
 
 func WebHttpHandler() http.Handler {
@@ -49,7 +52,7 @@ func WebHttpHandler() http.Handler {
 	webRd = render.New(render.Options{
 		Directory:  "public",
 		Extensions: []string{".html", ".tmpl"},
-		Layout:     "main",
+		Layout:     "todo",
 	})
 	n := negroni.Classic()
 
