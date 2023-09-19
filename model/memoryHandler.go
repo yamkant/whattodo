@@ -7,6 +7,7 @@ import (
 
 type memoryHandler struct {
 	todoMap map[int]*Todo
+	userMap map[int]*Todo
 }
 
 // API TODO

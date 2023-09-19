@@ -70,13 +70,14 @@ func getGoogleUserInfo(code string) ([]byte, error) {
 func googleAuthCallback(w http.ResponseWriter, r *http.Request) {
 	oauthstate, err := r.Cookie("oauthstate")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusTemporaryRedirect)
+		// NOTE: The cookie was not set from google/login
+		http.Redirect(w, r, "/auth/google/login", http.StatusTemporaryRedirect)
 		return
 	}
 
 	if r.FormValue("state") != oauthstate.Value {
-		errMsg := fmt.Sprintf("invalid google oauth state cookie:%s state:%s\n", oauthstate, r.FormValue("state"))
-		http.Error(w, errMsg, http.StatusTemporaryRedirect)
+		// NOTE: The cookie from google/login is not equal to state from google
+		http.Redirect(w, r, "/auth/google/login", http.StatusTemporaryRedirect)
 		return
 	}
 
