@@ -9,6 +9,7 @@ type memoryHandler struct {
 	todoMap map[int]*Todo
 }
 
+// API TODO
 func (m *memoryHandler) GetTodos(sessionId string) []*Todo {
 	list := []*Todo{}
 	for _, v := range m.todoMap {

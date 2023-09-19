@@ -15,7 +15,6 @@ func main() {
 	authMux := auth.AuthHttpHandler()
 
 	log.Println("Starting server...")
-
 	http.Handle("/api/", apiMux)
 	http.Handle("/auth/", authMux)
 	http.Handle("/", webMux)

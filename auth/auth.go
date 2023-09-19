@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -56,30 +56,26 @@ var GetSessionID = func(r *http.Request) string {
 }
 
 func getGoogleUserInfo(code string) ([]byte, error) {
-	fmt.Println(googleOauthConfig.ClientID)
-	fmt.Println(googleOauthConfig.ClientSecret)
 	token, err := googleOauthConfig.Exchange(context.Background(), code)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to Exchange %s", err.Error())
+		return nil, fmt.Errorf("failed to exchange %s", err.Error())
 	}
 	resp, err := http.Get(oauthGoogleUrlAPI + token.AccessToken)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to Get UserInfo %s\n", err.Error())
+		return nil, fmt.Errorf("failed to get userInfo %s", err.Error())
 	}
-	return ioutil.ReadAll(resp.Body)
+	return io.ReadAll(resp.Body)
 }
 
 func googleAuthCallback(w http.ResponseWriter, r *http.Request) {
 	oauthstate, err := r.Cookie("oauthstate")
 	if err != nil {
-		log.Printf(err.Error())
 		http.Error(w, err.Error(), http.StatusTemporaryRedirect)
 		return
 	}
 
 	if r.FormValue("state") != oauthstate.Value {
 		errMsg := fmt.Sprintf("invalid google oauth state cookie:%s state:%s\n", oauthstate, r.FormValue("state"))
-		log.Printf(errMsg)
 		http.Error(w, errMsg, http.StatusTemporaryRedirect)
 		return
 	}
