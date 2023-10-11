@@ -6,12 +6,13 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
+	"example.com/m/model"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/unrolled/render"
@@ -56,31 +57,28 @@ var GetSessionID = func(r *http.Request) string {
 }
 
 func getGoogleUserInfo(code string) ([]byte, error) {
-	fmt.Println(googleOauthConfig.ClientID)
-	fmt.Println(googleOauthConfig.ClientSecret)
 	token, err := googleOauthConfig.Exchange(context.Background(), code)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to Exchange %s", err.Error())
+		return nil, fmt.Errorf("failed to exchange %s", err.Error())
 	}
 	resp, err := http.Get(oauthGoogleUrlAPI + token.AccessToken)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to Get UserInfo %s\n", err.Error())
+		return nil, fmt.Errorf("failed to get userInfo %s", err.Error())
 	}
-	return ioutil.ReadAll(resp.Body)
+	return io.ReadAll(resp.Body)
 }
 
 func googleAuthCallback(w http.ResponseWriter, r *http.Request) {
 	oauthstate, err := r.Cookie("oauthstate")
 	if err != nil {
-		log.Printf(err.Error())
-		http.Error(w, err.Error(), http.StatusTemporaryRedirect)
+		// NOTE: The cookie was not set from google/login
+		http.Redirect(w, r, "/auth/google/login", http.StatusTemporaryRedirect)
 		return
 	}
 
 	if r.FormValue("state") != oauthstate.Value {
-		errMsg := fmt.Sprintf("invalid google oauth state cookie:%s state:%s\n", oauthstate, r.FormValue("state"))
-		log.Printf(errMsg)
-		http.Error(w, errMsg, http.StatusTemporaryRedirect)
+		// NOTE: The cookie from google/login is not equal to state from google
+		http.Redirect(w, r, "/auth/google/login", http.StatusTemporaryRedirect)
 		return
 	}
 
@@ -106,14 +104,17 @@ func googleAuthCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Set some session values.
 	session.Values["id"] = userInfo.ID
-	// Save it before we write to the response/return from the handler.
 	err = session.Save(r, w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	// Join User
+	db := model.NewDBHandler()
+	db.AddUser(userInfo.Email, userInfo.ID)
+
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
 

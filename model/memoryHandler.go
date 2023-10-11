@@ -7,8 +7,10 @@ import (
 
 type memoryHandler struct {
 	todoMap map[int]*Todo
+	userMap map[int]*User
 }
 
+// API TODO
 func (m *memoryHandler) GetTodos(sessionId string) []*Todo {
 	list := []*Todo{}
 	for _, v := range m.todoMap {
@@ -48,8 +50,27 @@ func (m *memoryHandler) RemoveTodo(id int) bool {
 	return false
 }
 
+// API USER
+func (m *memoryHandler) AddUser(email string, sessionId string) *User {
+	id := len(m.userMap) + 1
+	user := &User{id, email, sessionId, time.Now()}
+	m.userMap[id] = user
+	return user
+}
+
+func (m *memoryHandler) GetUserBySessionId(sessionId string) *User {
+	var retUser *User
+	for _, user := range m.userMap {
+		if user.SessionId == sessionId {
+			retUser = user
+		}
+	}
+	return retUser
+}
+
 func newMemoryHandler() DBHandler {
 	m := &memoryHandler{}
 	m.todoMap = make(map[int]*Todo)
+	m.userMap = make(map[int]*User)
 	return m
 }

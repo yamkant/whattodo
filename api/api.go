@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -34,10 +33,6 @@ type UpdateTodoDTO struct {
 type APIHandler struct {
 	http.Handler
 	db model.DBHandler
-}
-
-func (a *APIHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "API Handler Index")
 }
 
 func (a *APIHandler) getTodoListHandler(w http.ResponseWriter, r *http.Request) {
@@ -98,8 +93,6 @@ func APIHttpHandler() *APIHandler {
 		Handler: n,
 		db:      model.NewDBHandler(),
 	}
-
-	r.HandleFunc("/api/", a.indexHandler)
 
 	r.HandleFunc("/api/todos/", a.getTodoListHandler).Methods("GET")
 	r.HandleFunc("/api/todos/", a.addTodoHandler).Methods("POST")
