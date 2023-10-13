@@ -75,3 +75,20 @@ func UpdateTodo(c *gin.Context) {
 
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "todo not found"})
 }
+
+func DeleteTodo(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Params.ByName("id"))
+	bodyData := TodoDTO{}
+	if err := c.ShouldBind(&bodyData); err != nil {
+		return
+	}
+
+	for i := range todos {
+		if todos[i].ID == id {
+			todos = append(todos[:i], todos[i+1:]...)
+			c.IndentedJSON(http.StatusOK, nil)
+			return
+		}
+	}
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "todo not found"})
+}

@@ -181,6 +181,7 @@ const onClickRemoveTodo = async (target) => {
             listObj.remove();
         }
     }
+    location.reload();
 }
 
 const setCheckBoxByChecked = (target) => {
