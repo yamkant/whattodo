@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"sort"
 	"strconv"
 	"time"
 
@@ -42,6 +43,9 @@ type TodoDTO struct {
 }
 
 func GetTodos(c *gin.Context) {
+	sort.Slice(todos, func(i, j int) bool {
+		return todos[i].ID > todos[j].ID
+	})
 	c.IndentedJSON(http.StatusOK, todos)
 }
 
