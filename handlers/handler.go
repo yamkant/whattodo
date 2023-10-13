@@ -37,7 +37,18 @@ var todos = []Todo{
 	{ID: 3, Content: "Third todo", Completed: false, StartedAt: time.Now(), EndedAt: time.Now(), CreatedAt: time.Now()},
 }
 
-type TodoDTO struct {
+type TodoAddDTO struct {
+	Content   string `json:"content"`
+	Completed bool   `json:"completed"`
+}
+
+type TodoUpdateDTO struct {
+	Completed bool      `json:"completed"`
+	StartedAt time.Time `json:"started_at"`
+	EndedAt   time.Time `json:"ended_at"`
+}
+
+type TodoDeleteDTO struct {
 	Content   string `json:"content"`
 	Completed bool   `json:"completed"`
 }
@@ -50,7 +61,7 @@ func GetTodos(c *gin.Context) {
 }
 
 func AddTodo(c *gin.Context) {
-	bodyData := TodoDTO{}
+	bodyData := TodoAddDTO{}
 	if err := c.ShouldBind(&bodyData); err != nil {
 		return
 	}
@@ -63,15 +74,16 @@ func AddTodo(c *gin.Context) {
 
 func UpdateTodo(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Params.ByName("id"))
-	bodyData := TodoDTO{}
+	bodyData := TodoUpdateDTO{}
 	if err := c.ShouldBind(&bodyData); err != nil {
 		return
 	}
 
 	for i := range todos {
 		if todos[i].ID == id {
-			todos[i].Content = bodyData.Content
 			todos[i].Completed = bodyData.Completed
+			todos[i].StartedAt = bodyData.StartedAt
+			todos[i].EndedAt = bodyData.EndedAt
 			c.IndentedJSON(http.StatusOK, todos[i])
 			return
 		}
@@ -82,7 +94,7 @@ func UpdateTodo(c *gin.Context) {
 
 func DeleteTodo(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Params.ByName("id"))
-	bodyData := TodoDTO{}
+	bodyData := TodoDeleteDTO{}
 	if err := c.ShouldBind(&bodyData); err != nil {
 		return
 	}

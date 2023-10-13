@@ -45,7 +45,7 @@ const getTodoListHtml = (itemInfo) => {
                         <label for="checkbox-${uuid}">
                             ${checkboxLabel}
                         </label>
-                        <div class="text-ellipsis overflow-hidden">${itemInfo.content}</div>
+                        <div class="todo-content text-ellipsis overflow-hidden">${itemInfo.content}</div>
                     </div>
                 </div>
 
