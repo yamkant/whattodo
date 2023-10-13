@@ -45,7 +45,7 @@ const getTodoListHtml = (itemInfo) => {
                         <label for="checkbox-${uuid}">
                             ${checkboxLabel}
                         </label>
-                        <div class="todo-content text-ellipsis overflow-hidden">${itemInfo.content}</div>
+                        <div class="text-ellipsis overflow-hidden">${itemInfo.content}</div>
                     </div>
                 </div>
 
@@ -132,7 +132,7 @@ const onClickTodoItemUpdate = async (target, type) => {
     const item_id = target.closest('li').dataset.value;
     const resData = await axios({
         method: 'patch',
-        url: `/api/todos/${item_id}/`,
+        url: `/api/v1/todos/${item_id}/`,
         headers: {
             'Content-Type': 'application/json'
         },
@@ -169,7 +169,7 @@ const onClickRemoveTodo = async (target) => {
     if (confirm("Are you sure you want to remove?")) {
         const res = await axios({
             method: 'delete',
-            url: `/api/todos/${itemId}/`,
+            url: `/api/v1/todos/${itemId}/`,
         })
         .then((response) => {
             return response.data
@@ -181,6 +181,7 @@ const onClickRemoveTodo = async (target) => {
             listObj.remove();
         }
     }
+    location.reload();
 }
 
 const setCheckBoxByChecked = (target) => {
@@ -196,7 +197,7 @@ const onClickAddBtn = async (target) => {
 
     const resData = await axios({
         method: 'post',
-        url: '/api/todos/',
+        url: '/api/v1/todos/',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -223,7 +224,7 @@ window.addEventListener('load', async () => {
 
     const resData = await axios({
         method: 'get',
-        url: '/api/todos/',
+        url: '/api/v1/todos/',
     })
     .then((response) => {
         return response.data
