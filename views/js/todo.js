@@ -239,7 +239,6 @@ window.addEventListener('load', async () => {
 
     if (resData) {
         for (const data of resData) {
-            console.log(data)
             todoUl.insertAdjacentHTML('beforeend', getTodoListHtml(data));
         }
     }

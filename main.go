@@ -1,11 +1,11 @@
 package main
 
 import (
-	"example.com/m/handlers"
 	"example.com/m/models"
+	"example.com/m/routes"
 )
 
-var server = handlers.Server{}
+var server = routes.Server{}
 
 func main() {
 	models.ConnectDatabase()

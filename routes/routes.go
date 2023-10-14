@@ -1,4 +1,4 @@
-package handlers
+package routes
 
 import (
 	"fmt"
@@ -16,10 +16,11 @@ func (server *Server) Init(port string) {
 	server.Router = gin.New()
 
 	server.initRoutes()
-	server.apiStatus()
-	server.apiTodoRoutes()
 
-	fmt.Println("Static setting")
+	apiV1 := server.Router.Group("/api/v1")
+	server.apiStatusRoute(apiV1)
+	server.apiTodoRoute(apiV1)
+
 	server.Router.LoadHTMLGlob("views/*.html")
 	server.Router.Static("/css", "views/css")
 	server.Router.Static("/fonts", "views/fonts")
