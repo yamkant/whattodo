@@ -2,18 +2,21 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"os"
 	"time"
 
+	"example.com/m/models"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
+	"gorm.io/gorm"
 )
 
 type KakaoUserInfo struct {
-	ID          int64     `json:"id"`
+	ID          uint64    `json:"id"`
 	ConnectedAt time.Time `json:"connected_at"`
 }
 
@@ -53,7 +56,7 @@ func GetAuthToken(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/auth/login")
 }
 
-func GetLoginToken(c *gin.Context) {
+func Login(c *gin.Context) {
 	session := sessions.Default(c)
 	accessToken := session.Get("access_token")
 	if accessToken == nil {
@@ -84,5 +87,14 @@ func GetLoginToken(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unmarshal user info to object"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": userInfo})
+	session.Set("kakao_user_id", userInfo.ID)
+	session.Save()
+
+	var user models.User
+	err = models.DB.Where("kakao_id = ?", userInfo.ID).First(&user).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		c.Redirect(http.StatusTemporaryRedirect, "/auth/join")
+		return
+	}
+	c.Redirect(http.StatusTemporaryRedirect, "/")
 }

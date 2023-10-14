@@ -25,6 +25,7 @@ func (server *Server) Init(port string) {
 
 	apiV1 := server.Router.Group("/api/v1")
 	server.apiTodoRoute(apiV1)
+	server.apiUserRoute(apiV1)
 	server.apiStatusRoute(apiV1)
 
 	server.Router.LoadHTMLGlob("views/*.html")

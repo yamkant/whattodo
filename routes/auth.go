@@ -10,5 +10,5 @@ func (server *Server) authRoute() {
 	router.GET("/kakao", handlers.GetAuthCode)
 	router.GET("/kakao/callback", handlers.GetAuthToken)
 
-	router.GET("/login", handlers.GetLoginToken)
+	router.GET("/login", handlers.Login)
 }
