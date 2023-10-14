@@ -1,22 +1,13 @@
 package main
 
 import (
-	"example.com/m/handlers"
+	"example.com/m/models"
+	"example.com/m/routes"
 )
 
-var server = handlers.Server{}
+var server = routes.Server{}
 
 func main() {
-	// router := gin.Default()
-	// router.LoadHTMLGlob("templates/**/*")
-	// router.LoadHTMLGlob("views/*.html")
-	// router.Static("/js", "views/js")
-	// router.StaticFS("/static", http.Dir("static"))
-	// router.GET("/", func(c *gin.Context) {
-	// 	c.HTML(http.StatusOK, "todo.html", gin.H{
-	// 		"title": "What to do?",
-	// 	})
-	// })
-
+	models.ConnectDatabase()
 	server.Init(":8080")
 }

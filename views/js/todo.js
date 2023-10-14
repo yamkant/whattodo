@@ -1,3 +1,7 @@
+function getAxiosResponseData(response) {
+    return response.data.data;
+}
+
 const getCheckboxLabelValue = (checked) => {
     return checked ? `
         <svg class="w-6 h-6 mr-2 text-green-500 dark:text-green-400 flex-shrink-0" aria-hidden="true"
@@ -138,7 +142,7 @@ const onClickTodoItemUpdate = async (target, type) => {
         },
         data: data,
     }).then((response) => {
-        return response.data
+        return getAxiosResponseData(response);
     }).catch((err) => {
         console.error(err);
     });
@@ -172,7 +176,7 @@ const onClickRemoveTodo = async (target) => {
             url: `/api/v1/todos/${itemId}/`,
         })
         .then((response) => {
-            return response.data
+            return getAxiosResponseData(response);
         })
         .catch((err) => {
             console.error(err);
@@ -206,7 +210,7 @@ const onClickAddBtn = async (target) => {
         }
     })
     .then((response) => {
-        return response.data
+        return getAxiosResponseData(response);
     })
     .catch((err) => {
         console.error(err);
@@ -227,7 +231,7 @@ window.addEventListener('load', async () => {
         url: '/api/v1/todos/',
     })
     .then((response) => {
-        return response.data
+        return getAxiosResponseData(response);
     })
     .catch((err) => {
         console.error(err);
