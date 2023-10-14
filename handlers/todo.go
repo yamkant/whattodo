@@ -1,4 +1,4 @@
-package routes
+package handlers
 
 import (
 	"net/http"
@@ -54,16 +54,4 @@ func DeleteTodo(c *gin.Context) {
 
 	models.DB.Delete(&todo)
 	c.JSON(http.StatusOK, gin.H{"data": true})
-}
-
-func RenderHome(c *gin.Context) {
-	c.HTML(200, "index.html", gin.H{
-		"title": "Go Gin Boiler Plate",
-	})
-}
-
-func Welcome(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "Server started successfully at" + time.Now().String(),
-	})
 }

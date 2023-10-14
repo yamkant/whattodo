@@ -1,11 +1,14 @@
 package routes
 
-import "github.com/gin-gonic/gin"
+import (
+	"example.com/m/handlers"
+	"github.com/gin-gonic/gin"
+)
 
 func (server *Server) initRoutes() {
-	server.Router.GET("/", RenderHome)
+	server.Router.GET("/", handlers.RenderHome)
 }
 
 func (server *Server) apiStatusRoute(routerGroup *gin.RouterGroup) {
-	routerGroup.GET("", Welcome)
+	routerGroup.GET("", handlers.Welcome)
 }
