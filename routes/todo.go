@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (server *Server) apiTodoRoute(routerGroup *gin.RouterGroup) {
+func apiTodoRoute(routerGroup *gin.RouterGroup) {
 	router := routerGroup.Group("/todos")
 	router.GET("", handlers.GetTodos)
 	router.POST("", handlers.AddTodo)

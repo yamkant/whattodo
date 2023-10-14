@@ -2,13 +2,12 @@ package routes
 
 import (
 	"example.com/m/handlers"
+	"github.com/gin-gonic/gin"
 )
 
-func (server *Server) authRoute() {
-	router := server.Router.Group("/auth")
+func authRoute(routerGroup *gin.RouterGroup) {
+	routerGroup.GET("/kakao", handlers.GetAuthCode)
+	routerGroup.GET("/kakao/callback", handlers.GetAuthToken)
 
-	router.GET("/kakao", handlers.GetAuthCode)
-	router.GET("/kakao/callback", handlers.GetAuthToken)
-
-	router.GET("/login", handlers.Login)
+	routerGroup.GET("/login", handlers.Login)
 }
