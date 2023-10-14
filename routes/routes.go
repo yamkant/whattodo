@@ -3,6 +3,8 @@ package routes
 import (
 	"fmt"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,13 +15,17 @@ type Server struct {
 
 func (server *Server) Init(port string) {
 	gin.SetMode(gin.ReleaseMode)
+
 	server.Router = gin.New()
+	store := cookie.NewStore([]byte("secret"))
+	server.Router.Use(sessions.Sessions("sessionid", store))
 
 	server.initRoutes()
+	server.authRoute()
 
 	apiV1 := server.Router.Group("/api/v1")
-	server.apiStatusRoute(apiV1)
 	server.apiTodoRoute(apiV1)
+	server.apiStatusRoute(apiV1)
 
 	server.Router.LoadHTMLGlob("views/*.html")
 	server.Router.Static("/css", "views/css")
