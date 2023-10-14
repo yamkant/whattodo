@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"net/http"
-	"time"
 
 	"example.com/m/models"
 	"github.com/gin-gonic/gin"
@@ -29,9 +28,6 @@ func AddTodo(c *gin.Context) {
 	todo := models.Todo{
 		Content:   bodyData.Content,
 		Completed: bodyData.Completed,
-		StartedAt: time.Time{},
-		EndedAt:   time.Time{},
-		CreatedAt: time.Now(),
 		UserID:    user.ID,
 	}
 	models.DB.Create(&todo)
