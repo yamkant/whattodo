@@ -3,6 +3,7 @@ package routes
 import (
 	"fmt"
 
+	"example.com/m/middlewares"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
@@ -19,6 +20,7 @@ func (server *Server) Init(port string) {
 	server.Router = gin.New()
 	store := cookie.NewStore([]byte("secret"))
 	server.Router.Use(sessions.Sessions("sessionid", store))
+	server.Router.Use(middlewares.AuthMiddleware())
 
 	server.initRoutes()
 	server.authRoute()

@@ -5,26 +5,15 @@ import (
 	"time"
 
 	"example.com/m/models"
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
 func GetTodos(c *gin.Context) {
 	var todos []models.Todo
-	// USER VALIDATION PROCESS
-	session := sessions.Default(c)
-	kakaoUserID := session.Get("kakao_user_id")
-	if kakaoUserID == nil {
-		c.Redirect(http.StatusFound, "/auth/kakao")
-	}
-	var tmpUser models.User
-	err := models.DB.Where("kakao_id = ?", kakaoUserID).First(&tmpUser).Error
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"data": tmpUser})
-		return
-	}
 
-	models.DB.Where("user_id = ?", tmpUser.ID).Order("id desc").Find(&todos)
+	user := c.MustGet("user").(models.User)
+
+	models.DB.Where("user_id = ?", user.ID).Order("id desc").Find(&todos)
 
 	c.JSON(http.StatusOK, gin.H{"data": todos})
 }
@@ -36,20 +25,16 @@ func AddTodo(c *gin.Context) {
 		return
 	}
 
-	// USER VALIDATION PROCESS
-	session := sessions.Default(c)
-	kakaoUserID := session.Get("kakao_user_id")
-	if kakaoUserID == nil {
-		c.Redirect(http.StatusFound, "/auth/kakao")
-	}
-	var tmpUser models.User
-	err := models.DB.Where("kakao_id = ?", kakaoUserID).First(&tmpUser).Error
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"data": tmpUser})
-		return
-	}
+	user := c.MustGet("user").(models.User)
 
-	todo := models.Todo{Content: bodyData.Content, Completed: bodyData.Completed, StartedAt: time.Time{}, EndedAt: time.Time{}, CreatedAt: time.Now(), UserID: tmpUser.ID}
+	todo := models.Todo{
+		Content:   bodyData.Content,
+		Completed: bodyData.Completed,
+		StartedAt: time.Time{},
+		EndedAt:   time.Time{},
+		CreatedAt: time.Now(),
+		UserID:    user.ID,
+	}
 	models.DB.Create(&todo)
 
 	c.JSON(http.StatusOK, gin.H{"data": todo})
