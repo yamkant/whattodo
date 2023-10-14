@@ -9,6 +9,9 @@ type Todo struct {
 	StartedAt time.Time `json:"started_at" gorm:"column:started_at"`
 	EndedAt   time.Time `json:"ended_at" gorm:"column:ended_at"`
 	CreatedAt time.Time `json:"created_at" gorm:"column:created_at"`
+
+	UserID int
+	User   User `gorm:"foreignKey:UserID"`
 }
 
 func (Todo) TableName() string {
