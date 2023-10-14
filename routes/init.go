@@ -5,11 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (server *Server) initRoutes() {
-	server.Router.GET("/", handlers.RenderHome)
-	server.Router.GET("/auth/join", handlers.RenderJoin)
-}
-
-func (server *Server) apiStatusRoute(routerGroup *gin.RouterGroup) {
-	routerGroup.GET("", handlers.Welcome)
+func initRoutes(routerGroup *gin.RouterGroup) {
+	routerGroup.GET("/", handlers.RenderHome)
+	routerGroup.GET("/auth/join", handlers.RenderJoin)
 }
