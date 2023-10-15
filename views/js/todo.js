@@ -42,7 +42,7 @@ const getTodoListHtml = (itemInfo) => {
                         <input
                             type="checkbox"
                             class="hidden"
-                            onclick="onClickTodoItemUpdate(this, 'c')"
+                            onclick="onClickTodoItemUpdate(this, 'c'); location.reload();"
                             id="checkbox-${uuid}"
                             ${checkedStatus}
                         >
@@ -195,7 +195,7 @@ const setCheckBoxByChecked = (target) => {
 
 const onClickAddBtn = async (target) => {
     const todoUlContainer = document.querySelector('.todo-ul-container');
-    const todoUl = todoUlContainer.querySelector('.todo-ul');
+    const todoUl = todoUlContainer.querySelector('.todo-ul-uncompleted');
 
     const inputObj = target.closest('.todo-form').querySelector('input');
 
@@ -224,7 +224,8 @@ const onClickAddBtn = async (target) => {
 
 window.addEventListener('load', async () => {
     const todoUlContainer = document.querySelector('.todo-ul-container');
-    const todoUl = todoUlContainer.querySelector('.todo-ul');
+    const todoUlUncompleted = todoUlContainer.querySelector('.todo-ul-uncompleted');
+    const todoUlCompleted = todoUlContainer.querySelector('.todo-ul-completed');
 
     const resData = await axios({
         method: 'get',
@@ -239,7 +240,11 @@ window.addEventListener('load', async () => {
 
     if (resData) {
         for (const data of resData) {
-            todoUl.insertAdjacentHTML('beforeend', getTodoListHtml(data));
+            if (data.completed) {
+                todoUlCompleted.insertAdjacentHTML('beforeend', getTodoListHtml(data));
+            } else {
+                todoUlUncompleted.insertAdjacentHTML('beforeend', getTodoListHtml(data));
+            }
         }
     }
 });
