@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"time"
 
 	"example.com/m/models"
 	"github.com/gin-gonic/gin"
@@ -44,10 +45,14 @@ func UpdateTodo(c *gin.Context) {
 		return
 	}
 
-	// var bodyData models.TodoUpdateDTO
 	var bodyData models.TodoUpdateDTO
 	if err := c.ShouldBindJSON(&bodyData); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+	if bodyData.Completed {
+		bodyData.CompletedAt = time.Now()
+	} else {
+		bodyData.CompletedAt = time.Time{}
 	}
 	models.DB.Model(&todo).Select("*").Updates(bodyData)
 
