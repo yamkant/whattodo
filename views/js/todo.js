@@ -100,7 +100,7 @@ class TodoListComponent {
             const diffMin = Math.floor(diffMsec / (60 * 1000));
             const diffMinDisp = diffMin > 0 ? `${diffMin}분` : '';
             console.log(diffHour, diffMin, diffMsec)
-            if (diffHour >= 0 || diffMin >= 0) {
+            if (diffHour + diffMin !== 0 && (diffHour >= 0 || diffMin >= 0)) {
                 return `소요시간: ${diffHourDisp}${diffMinDisp}`
             } else {
                 return ""
