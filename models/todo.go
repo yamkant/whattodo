@@ -27,6 +27,10 @@ type TodoAddDTO struct {
 type TodoUpdateDTO struct {
 	Completed   bool      `json:"completed"`
 	CompletedAt time.Time `json:"completed_at"`
-	StartedAt   time.Time `json:"started_at"`
-	EndedAt     time.Time `json:"ended_at"`
+}
+
+type TodoTimeUpdateDTO struct {
+	Type      string    `json:"type"`
+	StartedAt time.Time `json:"started_at"`
+	EndedAt   time.Time `json:"ended_at"`
 }

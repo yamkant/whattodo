@@ -37,7 +37,7 @@ class TodoListComponent {
                         <input
                             type="checkbox"
                             class="hidden"
-                            onclick="onClickTodoItemUpdate(this, 'c'); location.reload();"
+                            onclick="onClickTodoItemUpdate(this); location.reload();"
                             id="checkbox-${uuid}"
                             ${checkedStatus}
                         >
@@ -58,18 +58,18 @@ class TodoListComponent {
             <div class="controller-container w-full flex justify-end space-x-2 text-sm py-2">
                 <div class="start-time-container flex">
                     <button
-                        onclick="onClickTodoItemUpdate(this, 's')"
+                        onclick="onClickTodoItemTimeUpdate(this, 's')"
                         class="mb-1 mr-1"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                             <path d="M5 4.98402V19.016C5.00305 19.1907 5.05178 19.3614 5.14135 19.5114C5.23092 19.6613 5.3582 19.7852 5.51052 19.8707C5.66284 19.9561 5.83489 20.0002 6.00955 19.9985C6.1842 19.9968 6.35536 19.9494 6.506 19.861L18.512 12.845C18.6605 12.7595 18.7839 12.6364 18.8696 12.4881C18.9554 12.3397 19.0006 12.1714 19.0006 12C19.0006 11.8287 18.9554 11.6603 18.8696 11.512C18.7839 11.3636 18.6605 11.2405 18.512 11.155L6.506 4.13902C6.35536 4.05062 6.1842 4.00321 6.00955 4.00151C5.83489 3.99982 5.66284 4.0439 5.51052 4.12936C5.3582 4.21483 5.23092 4.3387 5.14135 4.48865C5.05178 4.6386 5.00305 4.80939 5 4.98402Z" fill="#2F2F38"/>
                         </svg>
                     </button>
-                    <input class="w-28 border-2 pl-2" value="${startedAtValue}" data-value="${startedAt}" type="time">
+                    <input class="w-28 border-2 pl-2" value="${startedAtValue}" data-value="${startedAt}" type="time" disabled>
                 </div>
                 <div class="end-time-container flex">
                     <button
-                        onclick="onClickTodoItemUpdate(this, 'e')"
+                        onclick="onClickTodoItemTimeUpdate(this, 'e')"
                         class="mb-1 mr-1"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -77,7 +77,7 @@ class TodoListComponent {
                             <path d="M16 4H15C13.8954 4 13 4.89543 13 6V18C13 19.1046 13.8954 20 15 20H16C17.1046 20 18 19.1046 18 18V6C18 4.89543 17.1046 4 16 4Z" fill="#2F2F38"/>
                         </svg>
                     </button>
-                    <input class="w-28 border-2 pl-2" value="${endedAtValue}" data-value="${endedAt}" type="time">
+                    <input class="w-28 border-2 pl-2" value="${endedAtValue}" data-value="${endedAt}" type="time" disabled>
                 </div>
                 <button onclick="onClickRemoveTodo(this)" class="mb-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -93,10 +93,26 @@ class TodoListComponent {
             const tmpDate = completedAt.split('T')[0].split('-');
             return tmpDate.join('.')
         }
+
+        function getTimeDisplayString(diffMsec) {
+            const diffHour = Math.floor(diffMsec / (60 * 60 * 1000));
+            const diffHourDisp = diffHour > 0 ? `${diffHour}시간 ` : '';
+            const diffMin = Math.floor(diffMsec / (60 * 1000));
+            const diffMinDisp = diffMin > 0 ? `${diffMin}분` : '';
+            console.log(diffHour, diffMin, diffMsec)
+            if (diffHour >= 0 || diffMin >= 0) {
+                return `소요시간: ${diffHourDisp}${diffMinDisp}`
+            } else {
+                return ""
+            }
+        }
+
+        const diffMsec = new Date(endedAt) - new Date(startedAt);
         return `
             <div class="controller-container w-full flex justify-between space-x-2 text-sm py-2">
-                <div>
-                    ${getYearMonthDayDate(completedAt)}
+                <div class="flex flex-row">
+                    <div>${getYearMonthDayDate(completedAt)}</div>
+                    <div class="ml-5">${getTimeDisplayString(diffMsec)}</div>
                 </div>
                 <button onclick="onClickRemoveTodo(this)" class="mb-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -150,35 +166,11 @@ const toISOStringWithTimezone = date => {
         ':' + pad(tzOffset % 60);
 };
 
-const onClickTodoItemUpdate = async (target, type) => {
+const onClickTodoItemUpdate = async (target) => {
     const todoItemObj = target.closest('.todo-item')
-    // start time
-    const startInputObj = todoItemObj?.querySelector('.start-time-container>input')
-    const startTime = toISOStringWithTimezone(new Date())
-
-    // end time
-    const endInputObj = todoItemObj?.querySelector('.end-time-container>input')
-    const endTime = toISOStringWithTimezone(new Date())
-
-    // checked
     const checkboxInputObj = todoItemObj.querySelector('input[type="checkbox"]')
 
-    const data = {}
-    switch (type) {
-        case 's':
-            data.started_at = startTime;
-            data.completed = checkboxInputObj.checked;
-            break;
-        case 'e':
-            data.started_at = startInputObj.dataset.value;
-            data.ended_at = endTime;
-            data.completed = checkboxInputObj.checked;
-            break;
-        case 'c':
-            data.completed = checkboxInputObj.checked;
-        default:
-            break;
-    }
+    const data = { completed: checkboxInputObj.checked }
 
     const item_id = target.closest('li').dataset.value;
     const resData = await axios({
@@ -193,23 +185,33 @@ const onClickTodoItemUpdate = async (target, type) => {
     }).catch((err) => {
         console.error(err);
     });
-
     if (resData) {
-        switch (type) {
-            case 's':
-                startInputObj.value = startTime.slice(11, 16);
-                break;
-            case 'e':
-                startInputObj.value = displayDateTime(startInputObj.dataset.value);
-                endInputObj.value = endTime.slice(11, 16);
-                break;
-            case 'c':
-                setCheckBoxByChecked(checkboxInputObj);
-                break;
-            default:
-                break;
-        }
+        setCheckBoxByChecked(checkboxInputObj);
     }
+}
+
+const onClickTodoItemTimeUpdate = async (target, type) => {
+    const data = {type: type}
+    const item_id = target.closest('li').dataset.value;
+    const resData = await axios({
+        method: 'patch',
+        url: `/api/v1/todos/${item_id}/time/`,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: data,
+    }).then((response) => {
+        return getAxiosResponseData(response);
+    }).catch((err) => {
+        console.error(err);
+    });
+
+    if (!resData) {
+        alert('Push start button first.');
+        return;
+    }
+
+    location.reload();
 }
 
 const onClickRemoveTodo = async (target) => {

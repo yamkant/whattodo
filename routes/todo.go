@@ -10,5 +10,6 @@ func (server *Server) apiTodoRoute(routerGroup *gin.RouterGroup) {
 	router.GET("", handlers.GetTodos)
 	router.POST("", handlers.AddTodo)
 	router.PATCH("/:id/", handlers.UpdateTodo)
+	router.PATCH("/:id/time/", handlers.UpdateTimeTodo)
 	router.DELETE("/:id/", handlers.DeleteTodo)
 }
