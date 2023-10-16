@@ -31,20 +31,24 @@ class TodoListComponent {
     getListContentHtml = (checkedStatus, checkboxLabel, content) => {
         const uuid = this.getUuidv4();
         return `
-            <div class="flex flex-col w-full items-start">
+            <div class="flex flex-col w-full items-start text-sm md:text-lg">
                 <div class="flex w-full justify-between">
                     <div class="checkbox-container flex">
                         <input
                             type="checkbox"
                             class="hidden"
-                            onclick="onClickTodoItemUpdate(this); location.reload();"
+                            onclick="updateTodoCompleted(this); location.reload();"
                             id="checkbox-${uuid}"
                             ${checkedStatus}
                         >
                         <label for="checkbox-${uuid}">
                             ${checkboxLabel}
                         </label>
-                        <div class="text-ellipsis overflow-hidden">${content}</div>
+                        <input
+                            class="todo-content w-72 md:w-80 text-ellipsis overflow-hidden cursor-pointer"
+                            onchange="updateTodoContent(this);"
+                            value='${content}'
+                        >
                     </div>
                 </div>
             </div>
@@ -58,7 +62,7 @@ class TodoListComponent {
             <div class="controller-container w-full flex justify-end space-x-2 text-sm py-2">
                 <div class="start-time-container flex">
                     <button
-                        onclick="onClickTodoItemTimeUpdate(this, 's')"
+                        onclick="updateTodoTime(this, 's')"
                         class="mb-1 mr-1"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -69,7 +73,7 @@ class TodoListComponent {
                 </div>
                 <div class="end-time-container flex">
                     <button
-                        onclick="onClickTodoItemTimeUpdate(this, 'e')"
+                        onclick="updateTodoTime(this, 'e')"
                         class="mb-1 mr-1"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -99,7 +103,6 @@ class TodoListComponent {
             const diffHourDisp = diffHour > 0 ? `${diffHour}시간 ` : '';
             const diffMin = Math.floor(diffMsec / (60 * 1000) % 60);
             const diffMinDisp = diffMin > 0 ? `${diffMin}분` : '';
-            console.log(diffHour, diffMin, diffMsec)
             if (diffHour + diffMin !== 0 && (diffHour >= 0 || diffMin >= 0)) {
                 return `소요시간: ${diffHourDisp}${diffMinDisp}`
             } else {
@@ -166,7 +169,7 @@ const toISOStringWithTimezone = date => {
         ':' + pad(tzOffset % 60);
 };
 
-const onClickTodoItemUpdate = async (target) => {
+const updateTodoCompleted = async (target) => {
     const todoItemObj = target.closest('.todo-item')
     const checkboxInputObj = todoItemObj.querySelector('input[type="checkbox"]')
 
@@ -190,7 +193,28 @@ const onClickTodoItemUpdate = async (target) => {
     }
 }
 
-const onClickTodoItemTimeUpdate = async (target, type) => {
+const updateTodoContent = async (target) => {
+    const todoItemObj = target.closest('.todo-item')
+    const todoContentInputObj = todoItemObj.querySelector('.todo-content');
+    const todoContent= todoContentInputObj.value;
+
+    const data = { content: todoContent }
+    const item_id = target.closest('li').dataset.value;
+    const resData = await axios({
+        method: 'patch',
+        url: `/api/v1/todos/${item_id}/content/`,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: data,
+    }).then((response) => {
+        return getAxiosResponseData(response);
+    }).catch((err) => {
+        console.error(err);
+    });
+}
+
+const updateTodoTime = async (target, type) => {
     const data = {type: type}
     const item_id = target.closest('li').dataset.value;
     const resData = await axios({
