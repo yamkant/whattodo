@@ -71,6 +71,24 @@ func UpdateTodo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": todo})
 }
 
+func UpdateContentTodo(c *gin.Context) {
+	user := c.MustGet("user").(models.User)
+
+	var todo models.Todo
+	if err := models.DB.Where("id = ?", c.Param("id")).Where("user_id = ?", user.ID).First(&todo).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		return
+	}
+
+	var bodyData models.TodoContentUpdateDTO
+	if err := c.ShouldBindJSON(&bodyData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+	models.DB.Model(&todo).Select("*").Updates(bodyData)
+
+	c.JSON(http.StatusOK, gin.H{"data": todo})
+}
+
 func UpdateTimeTodo(c *gin.Context) {
 	user := c.MustGet("user").(models.User)
 

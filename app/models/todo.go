@@ -33,6 +33,10 @@ type TodoUpdateDTO struct {
 	CompletedAt time.Time `json:"completed_at"`
 }
 
+type TodoContentUpdateDTO struct {
+	Content string `json:"content"`
+}
+
 type TodoTimeUpdateDTO struct {
 	Type      string    `json:"type"`
 	StartedAt time.Time `json:"started_at"`
