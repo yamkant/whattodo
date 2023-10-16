@@ -262,11 +262,7 @@ const onClickAddBtn = async (target) => {
     .catch((err) => {
         console.error(err);
     });
-
-    if (resData) {
-        todoUl.insertAdjacentHTML('afterbegin', getUncompletedTodoHtml(resData));
-        inputObj.value = "";
-    }
+    location.reload();
 }
 
 window.addEventListener('load', async () => {

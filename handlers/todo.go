@@ -13,17 +13,16 @@ func GetTodos(c *gin.Context) {
 	user := c.MustGet("user").(models.User)
 
 	var todos []models.Todo
-	// models.DB.Where("user_id = ?", user.ID).Order("id desc").Find(&todos)
 	models.DB.Raw(`
 		SELECT
 			*
 		FROM todos
-		WHERE user_id = ?
+		WHERE user_id = 1
 		ORDER BY
 		CASE
-			WHEN completed = true THEN completed_at AND -created_at
-			ELSE -created_at
-		END
+			WHEN completed = true THEN 1 AND 2
+			ELSE 2
+		END, completed_at DESC, created_at DESC
 	`, user.ID).Scan(&todos)
 
 	c.JSON(http.StatusOK, gin.H{"data": todos})
