@@ -13,6 +13,6 @@ func main() {
 	models.ConnectDatabase()
 	router := server.Init()
 
-	fmt.Println("Server started.\nListening on 127.0.0.1/")
-	router.Run(":8080")
+	fmt.Println("Server started.\n")
+	router.Run("0.0.0.0:8080")
 }

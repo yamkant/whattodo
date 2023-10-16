@@ -97,7 +97,7 @@ class TodoListComponent {
         function getTimeDisplayString(diffMsec) {
             const diffHour = Math.floor(diffMsec / (60 * 60 * 1000));
             const diffHourDisp = diffHour > 0 ? `${diffHour}시간 ` : '';
-            const diffMin = Math.floor(diffMsec / (60 * 1000));
+            const diffMin = Math.floor(diffMsec / (60 * 1000) % 60);
             const diffMinDisp = diffMin > 0 ? `${diffMin}분` : '';
             console.log(diffHour, diffMin, diffMsec)
             if (diffHour + diffMin !== 0 && (diffHour >= 0 || diffMin >= 0)) {

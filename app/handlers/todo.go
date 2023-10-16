@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -17,7 +18,7 @@ func GetTodos(c *gin.Context) {
 		SELECT
 			*
 		FROM todos
-		WHERE user_id = 1
+		WHERE user_id = 1 AND deleted_at IS NULL
 		ORDER BY
 		CASE
 			WHEN completed = true THEN 1 AND 2
@@ -100,12 +101,13 @@ func UpdateTimeTodo(c *gin.Context) {
 func DeleteTodo(c *gin.Context) {
 	user := c.MustGet("user").(models.User)
 
-	var todo models.Todo
-	if err := models.DB.Where("id = ?", c.Param("id")).Where("user_id = ?", user.ID).First(&todo).Error; err != nil {
+	if err := models.DB.Where("id = ?", c.Param("id")).Where("user_id = ?", user.ID).Delete(&models.Todo{}).Error; err != nil {
+		fmt.Println("제거 실패")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
 		return
 	}
-	models.DB.Delete(&todo)
+	// models.DB.Delete(&todo)
+	fmt.Println("제거 성공")
 
 	c.JSON(http.StatusOK, gin.H{"data": true})
 }
