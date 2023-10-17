@@ -17,14 +17,10 @@
 - gorm과 sqlite3를 사용하여 빠르게 3-tier 서버 아키텍처를 구성하였습니다.
 - 프로젝트를 Docker container로 구성하여 Docker compose를 사용한 빠른 배포환경을 설정하였습니다.
 - Frontend Framework를 사용하지 않고, 순수 javascript와 axios를 통해 golang REST API 서버와 통신합니다.
+- google chart를 사용하여 하루 수행한 투두 리스트를 시간순서로 나열합니다.
 
 ### 서비스 데모
 #### 데모 이미지
-![service-demo](docs/images/whattodo-demo.png)
+![service-demo-1](docs/images/w2d-demo-1.png)
+![service-demo-2](docs/images/w2d-demo-2.png)
 #### 데모사이트: [간단한 가입과 함께 whattodo 사용해보세요!](http://www.devyam.net:8080/)
-
-
-## 이후 일정
-### 개발 계획
-- [ ] 완료 항목들 일자별로 묶어서 리스팅하기
-- [ ] 일자별로 묶인 완료 항목들을 시각화 하여, 오늘 하루 한 일에 대한 Bar Chart 그리기
