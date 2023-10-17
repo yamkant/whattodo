@@ -71,6 +71,7 @@ const onClickAddBtn = async (target) => {
     location.reload();
 }
 
+
 window.addEventListener('load', async () => {
     const todoUlContainer = document.querySelector('.todo-ul-container');
     const todoUlUncompleted = todoUlContainer.querySelector('.todo-ul-uncompleted');
@@ -98,4 +99,7 @@ window.addEventListener('load', async () => {
             }
         }
     }
+
+    const googleChartHandler = new GoogleChartHandler();
+    googleChartHandler.run(resData);
 });
