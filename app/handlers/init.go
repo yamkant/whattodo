@@ -8,13 +8,13 @@ import (
 
 func RenderHome(c *gin.Context) {
 	c.HTML(200, "index.html", gin.H{
-		"title": "Go Gin Boiler Plate",
+		"title": "What2Do",
 	})
 }
 
 func RenderJoin(c *gin.Context) {
 	c.HTML(200, "join.html", gin.H{
-		"title": "Go Gin Boiler Plate",
+		"title": "What2Do",
 	})
 }
 

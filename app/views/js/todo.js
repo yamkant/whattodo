@@ -62,7 +62,7 @@ class TodoListComponent {
             <div class="controller-container w-full flex justify-end space-x-2 text-sm py-2">
                 <div class="start-time-container flex">
                     <button
-                        onclick="updateTodoTime(this, 's')"
+                        onclick="updateTodoStartAt(this)"
                         class="mb-1 mr-1"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -73,7 +73,7 @@ class TodoListComponent {
                 </div>
                 <div class="end-time-container flex">
                     <button
-                        onclick="updateTodoTime(this, 'e')"
+                        onclick="updateTodoEndAt(this)"
                         class="mb-1 mr-1"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -214,16 +214,36 @@ const updateTodoContent = async (target) => {
     });
 }
 
-const updateTodoTime = async (target, type) => {
-    const data = {type: type}
+const updateTodoStartAt = async (target) => {
     const item_id = target.closest('li').dataset.value;
     const resData = await axios({
         method: 'patch',
-        url: `/api/v1/todos/${item_id}/time/`,
+        url: `/api/v1/todos/${item_id}/start_at/`,
         headers: {
             'Content-Type': 'application/json'
         },
-        data: data,
+    }).then((response) => {
+        return getAxiosResponseData(response);
+    }).catch((err) => {
+        console.error(err);
+    });
+
+    if (!resData) {
+        alert('Server error');
+        return;
+    }
+
+    location.reload();
+}
+
+const updateTodoEndAt = async (target) => {
+    const item_id = target.closest('li').dataset.value;
+    const resData = await axios({
+        method: 'patch',
+        url: `/api/v1/todos/${item_id}/end_at/`,
+        headers: {
+            'Content-Type': 'application/json'
+        },
     }).then((response) => {
         return getAxiosResponseData(response);
     }).catch((err) => {

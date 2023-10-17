@@ -37,8 +37,13 @@ type TodoContentUpdateDTO struct {
 	Content string `json:"content"`
 }
 
-type TodoTimeUpdateDTO struct {
-	Type      string    `json:"type"`
+type TodoStartAtUpdateDTO struct {
 	StartedAt time.Time `json:"started_at"`
 	EndedAt   time.Time `json:"ended_at"`
+}
+
+type TodoEndAtUpdateDTO struct {
+	Completed   bool      `json:"completed"`
+	EndedAt     time.Time `json:"ended_at"`
+	CompletedAt time.Time `json:"completed_at"`
 }
