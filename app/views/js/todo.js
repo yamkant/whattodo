@@ -71,6 +71,15 @@ const onClickAddBtn = async (target) => {
     location.reload();
 }
 
+const showTodoCompletedList = (target) => {
+    const todoCompletedObj = target.closest('.todo-completed-container').querySelector('.todo-ul-completed');
+    if (target.checked) {
+        todoCompletedObj.classList.remove('hidden');
+    } else {
+        todoCompletedObj.classList.add('hidden');
+    }
+}
+
 
 window.addEventListener('load', async () => {
     const todoUlContainer = document.querySelector('.todo-ul-container');
@@ -91,6 +100,8 @@ window.addEventListener('load', async () => {
     const todoListComponent = new TodoListComponent();
 
     if (resData) {
+        const googleChartHandler = new GoogleChartHandler();
+        googleChartHandler.run(resData);
         for (const data of resData) {
             if (data.completed) {
                 todoUlCompleted.insertAdjacentHTML('beforeend', todoListComponent.getCompletedTodoHtml(data));
@@ -99,7 +110,4 @@ window.addEventListener('load', async () => {
             }
         }
     }
-
-    const googleChartHandler = new GoogleChartHandler();
-    googleChartHandler.run(resData);
 });
